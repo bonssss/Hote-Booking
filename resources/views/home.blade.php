@@ -38,39 +38,23 @@
     <section class="ftco-section ftco-services">
     	<div class="container">
     		<div class="row">
-          <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
+
+			@foreach ($hotels as $hotel)
+			<div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
             <div class="d-block services-wrap text-center">
-              <div class="img" style="background-image: url(images/services-1.jpg);"></div>
+              <div class="img" style="background-image: url({{asset('assets/images/'.$hotel->image.'')}});"></div>
               <div class="media-body py-4 px-3">
-                <h3 class="heading">Sheraton</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-                <p>Location: Cairo.</p>
+                <h3 class="heading">{{$hotel->name}}</h3>
+                <p>{{$hotel->description}}</p>
+                <p>{{$hotel->location}}</p>
                 <p><a href="rooms.html" class="btn btn-primary">View rooms</a></p>
               </div>
             </div>      
           </div>
-          <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
-            <div class="d-block services-wrap text-center">
-              <div class="img" style="background-image: url(images/image_4.jpg);"></div>
-              <div class="media-body py-4 px-3">
-                <h3 class="heading">The Plaza Hote</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-				<p>Location: New york.</p>
-                <p><a href="#" class="btn btn-primary">View rooms</a></p>
-              </div>
-            </div>    
-          </div>
-          <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
-            <div class="d-block services-wrap text-center">
-              <div class="img" style="background-image: url(images/image_4.jpg);"></div>
-              <div class="media-body py-4 px-3">
-                <h3 class="heading">The Ritz</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-				<p>Location: Paris.</p>
-                <p><a href="#" class="btn btn-primary">View rooms</a></p>
-              </div>
-            </div>      
-          </div>
+
+			 @endforeach
+          
+          
         </div>
     	</div>
     </section>
