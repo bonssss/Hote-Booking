@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Hotel\Hotel;
+use App\Models\Apartment\Apartment;
+
 
 class HomeController extends Controller
 {
@@ -26,6 +28,9 @@ class HomeController extends Controller
     {
  
         $hotels = Hotel::select()->orderBy('id','desc')->take(3)->get();
-        return view('home', compact('hotels'));
+
+        $rooms = Apartment::select()->orderBy('id','desc')->take(4)->get();
+
+        return view('home', compact('hotels', 'rooms'));
     }
 }
