@@ -27,59 +27,56 @@ class HotelsController extends Controller
         return view('hotels.roomdetails', compact('getroom'));
     }
 
-    public function roomsBooking(Request $request,$id){
+    public function roomsBooking(Request $request, $id)
+{
+    $room = Apartment::find($id);
+    $hotel = Hotel::find($id);
 
+    if (!$hotel) {
+        return abort(404, 'Hotel not found.');
+    }
 
-        $room = Apartment::find($id);
-        $hotel = Hotel::find($id);
-        if (Auth::check()) {
-            // Get the authenticated user's ID
-            $userId = Auth::user()->id;
-        } else {
-            // Handle case where the user is not authenticated
-            return redirect()->route('login')->with('error', 'You need to be logged in to book a room.');
-        }
+    if (!$room) {
+        return abort(404, 'Room not found.');
+    }
 
-        if (!$hotel) {
-            // Handle case where the hotel is not found
-            return abort(404);
-        }
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'You need to be logged in to book a room.');
+    }
 
+    $checkIn = new DateTime($request->check_in);
+    $checkOut = new DateTime($request->check_out);
+    $currentDate = new DateTime();
 
-        if(strval(date("n/j/Y")) < strval($request->check_in) AND strval(date("n/j/Y")) < strval($request->check_out)) {
+    if ($checkIn <= $currentDate || $checkOut <= $currentDate) {
+        return redirect()->back()->withErrors(['error' => 'Choose future dates.']);
+    }
 
-            if( $request->check_in <  $request->check_out )
-        {
-            $date1 = new DateTime($request->check_in);
-            $date2 = new DateTime($request->check_out);
+    if ($checkIn >= $checkOut) {
+        return redirect()->back()->withErrors(['error' => 'Check-out date should be greater than check-in date.']);
+    }
 
-            $interval = $date1->diff($date2);
-            $days= $interval->format('%a');
+    $interval = $checkIn->diff($checkOut);
+    $days = $interval->format('%a');
 
-           //logic 
-           $bookRooms = Booking::create(
-            [
-                "name"=> $request->name,
-                "email"=> $request->email,
-                "phone_number"=> $request->phone_number,
-                "check_in"=> $request->check_in,
-                "check_out"=> $request->check_out,
-                "days"=> $days,
-                "price"=> 0,
-                "user_id"=> Auth::user()->id,
-                "room_name"=> $room->name,
-                "hotel_name"=> $hotel->name,
-            ]
-            );
+    // Create booking record
+    $bookedRoom = Booking::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone_number' => $request->phone_number,
+        'check_in' => $request->check_in,
+        'check_out' => $request->check_out,
+        'days' => $days,
+        'price' => 0, // Update with actual price logic
+        'user_id' => Auth::user()->id,
+        'room_name' => $room->name,
+        'hotel_name' => $hotel->name,
+    ]);
 
-            echo " Booked successfully";
-        } else {
-        echo "check out date should be greater";
-        }
-} else{ 
-        echo"choose future dates, invalid date";
-     }
+    if ($bookedRoom) {
+        return redirect()->route('success')->with('success', 'Room booked successfully.');
+    } else {
+        return redirect()->back()->withErrors(['error' => 'Failed to book room.']);
     }
 }
-
-
+}
